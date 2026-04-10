@@ -1,19 +1,40 @@
 const MAP_STYLE_URL = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+const SITE_IMAGE_COORDS = [
+    [121.4688, 31.2356], // top-left
+    [121.4794, 31.2356], // top-right
+    [121.4794, 31.2264], // bottom-right
+    [121.4688, 31.2264]  // bottom-left
+];
+const SITE_VIEW_BOUNDS = [
+    [SITE_IMAGE_COORDS[0][0], SITE_IMAGE_COORDS[2][1]], // west, south
+    [SITE_IMAGE_COORDS[1][0], SITE_IMAGE_COORDS[0][1]]  // east, north
+];
+const siteCoord = (x, y) => {
+    const left = SITE_IMAGE_COORDS[0][0];
+    const right = SITE_IMAGE_COORDS[1][0];
+    const top = SITE_IMAGE_COORDS[0][1];
+    const bottom = SITE_IMAGE_COORDS[2][1];
+    return [
+        +(left + (right - left) * x).toFixed(6),
+        +(top - (top - bottom) * y).toFixed(6)
+    ];
+};
+const SITE_CENTER = siteCoord(0.5, 0.5);
 
 const map = new maplibregl.Map({
     container: 'map',
     style: MAP_STYLE_URL,
-    center: [121.4740, 31.2310],
-    zoom: 16.8,
-    pitch: 60,
-    bearing: 42,
+    center: SITE_CENTER,
+    zoom: 17.15,
+    pitch: 0,
+    bearing: 0,
     antialias: true,
     interactive: true,
-    dragRotate: true,
+    dragRotate: false,
     dragPan: true
 });
 
-const DEFAULT_VIEW = { center: [121.4740, 31.2310], zoom: 16.8, pitch: 60, bearing: 42 };
+const DEFAULT_VIEW = { center: SITE_CENTER, zoom: 17.15, pitch: 0, bearing: 0 };
 
 // ==== 1. State Model ====
 let robotFilter = 'all';
@@ -733,11 +754,96 @@ const DATA = {
 };
 
 const INSPECTION_POINT_COORDS = {
-    'IP-E3': [121.4725, 31.2325],
-    'IP-E5': [121.4760, 31.2260],
-    'IP-B1': [121.4700, 31.2290],
-    'IP-B3': [121.4715, 31.2335]
+    'IP-E3': siteCoord(0.72, 0.57),
+    'IP-E5': siteCoord(0.84, 0.68),
+    'IP-B1': siteCoord(0.21, 0.63),
+    'IP-B3': siteCoord(0.57, 0.56)
 };
+
+const applySiteLayout = () => {
+    const pt = {
+        E3: INSPECTION_POINT_COORDS['IP-E3'],
+        E5: INSPECTION_POINT_COORDS['IP-E5'],
+        B1: INSPECTION_POINT_COORDS['IP-B1'],
+        B3: INSPECTION_POINT_COORDS['IP-B3'],
+        R07: siteCoord(0.67, 0.58),
+        R12: siteCoord(0.43, 0.56),
+        R02: siteCoord(0.58, 0.71),
+        R11: siteCoord(0.16, 0.36),
+        R05: siteCoord(0.46, 0.74),
+        A03: siteCoord(0.63, 0.67),
+        D1: siteCoord(0.16, 0.36),
+        D2: siteCoord(0.89, 0.39),
+        D3: siteCoord(0.33, 0.34),
+        D4: siteCoord(0.63, 0.36),
+        D5: siteCoord(0.78, 0.74),
+        D6: siteCoord(0.46, 0.74),
+        T1N1: siteCoord(0.35, 0.48),
+        T1N2: siteCoord(0.53, 0.48),
+        T1N4: siteCoord(0.84, 0.63),
+        T2N3: siteCoord(0.33, 0.45)
+    };
+
+    const setRobotCoord = (id, coord) => {
+        const robot = DATA.robots.find((r) => r.id === id);
+        if (robot) robot.coords = coord;
+    };
+    setRobotCoord('R-07', pt.R07);
+    setRobotCoord('R-12', pt.R12);
+    setRobotCoord('R-02', pt.R02);
+    setRobotCoord('R-11', pt.R11);
+    setRobotCoord('R-05', pt.R05);
+
+    const setDockCoord = (id, coord) => {
+        const dock = DATA.docks.find((d) => d.id === id);
+        if (dock) dock.coords = coord;
+    };
+    setDockCoord('D-01', pt.D1);
+    setDockCoord('D-02', pt.D2);
+    setDockCoord('D-03', pt.D3);
+    setDockCoord('D-04', pt.D4);
+    setDockCoord('D-05', pt.D5);
+    setDockCoord('D-06', pt.D6);
+
+    const setAlertCoord = (id, coord) => {
+        const alert = DATA.alerts.find((a) => a.id === id);
+        if (alert) alert.coords = coord;
+    };
+    setAlertCoord('A-01', pt.E3);
+    setAlertCoord('A-02', pt.B3);
+    setAlertCoord('A-03', pt.A03);
+
+    const t1 = DATA.tasks['T-01'];
+    if (t1) {
+        t1.robotCoords = pt.R07;
+        t1.targetCoords = pt.T1N4;
+        t1.path = [pt.T1N1, pt.T1N2, pt.R07];
+        t1.futurePath = [pt.R07, pt.T1N4, pt.E5];
+        t1.targetLine = [pt.R07, pt.T1N4];
+        if (Array.isArray(t1.timeline?.nodes)) {
+            t1.timeline.nodes[0].coords = pt.T1N1;
+            t1.timeline.nodes[1].coords = pt.T1N2;
+            t1.timeline.nodes[2].coords = pt.E3;
+            t1.timeline.nodes[3].coords = pt.T1N4;
+            t1.timeline.nodes[4].coords = pt.E5;
+        }
+    }
+
+    const t2 = DATA.tasks['T-02'];
+    if (t2) {
+        t2.robotCoords = pt.R12;
+        t2.targetCoords = pt.B3;
+        t2.path = [pt.B1, pt.R12];
+        t2.futurePath = [pt.R12, pt.B3, pt.T2N3];
+        t2.targetLine = [pt.R12, pt.B3];
+        if (Array.isArray(t2.timeline?.nodes)) {
+            t2.timeline.nodes[0].coords = pt.B1;
+            t2.timeline.nodes[1].coords = pt.B3;
+            t2.timeline.nodes[2].coords = pt.T2N3;
+        }
+    }
+};
+applySiteLayout();
 
 const getInspectionPointIdByCoords = (coords) => {
     if (!Array.isArray(coords) || coords.length < 2) return null;
@@ -865,7 +971,7 @@ const setFocus = (type, id, opts = {}) => {
         const bot = DATA.robots.find(r => r.id === id);
         if (bot && bot.taskId) withTaskSelection(bot.taskId, bot.id);
         if (bot) {
-            map.easeTo({ center: bot.coords, zoom: 18, pitch: 45 });
+            map.easeTo({ center: bot.coords, zoom: 18, pitch: 0, bearing: 0 });
             if (opts.instantPopup) {
                 showRobotPopup(id);
             } else {
@@ -885,7 +991,7 @@ const setFocus = (type, id, opts = {}) => {
         setTimelineVisible(true);
         const coords = INSPECTION_POINT_COORDS[id];
         if (coords) {
-            map.easeTo({ center: coords, zoom: 19, pitch: 50 });
+            map.easeTo({ center: coords, zoom: 19, pitch: 0, bearing: 0 });
             let opened = false;
             const openPopup = () => {
                 if (opened) return;
@@ -918,7 +1024,7 @@ const setFocus = (type, id, opts = {}) => {
         const alt = DATA.alerts.find(a => a.id === id);
         if (alt && alt.taskId) {
             withTaskSelection(alt.taskId, DATA.tasks[alt.taskId].bot);
-            map.easeTo({ center: alt.coords, zoom: 19, pitch: 60, bearing: map.getBearing() + 10 });
+            map.easeTo({ center: alt.coords, zoom: 19, pitch: 0, bearing: 0 });
         }
     } else if (type === 'dock') {
         if (state.lastClick.type === 'dock' && state.lastClick.id === id && state.viewMode === 'focus') {
@@ -942,7 +1048,7 @@ const setFocus = (type, id, opts = {}) => {
         setTimelineVisible(false);
         const dock = DATA.docks.find(d => d.id === id);
         if (dock) {
-            map.flyTo({ center: dock.coords, zoom: 19.5, pitch: 60 });
+            map.flyTo({ center: dock.coords, zoom: 19.5, pitch: 0, bearing: 0 });
             let opened = false;
             const openPopup = () => {
                 if (opened) return;
@@ -961,7 +1067,7 @@ const setFocus = (type, id, opts = {}) => {
         }
         setAlertPanelVisible(false);
         setTimelineVisible(false);
-        map.easeTo({ center: coords, zoom: 19, pitch: 50 });
+        map.easeTo({ center: coords, zoom: 19, pitch: 0, bearing: 0 });
     } else if (type === 'all' && id === 'global') {
         state.lastClick = { type: null, id: null };
         state.currentAlertId = null;
@@ -1703,7 +1809,7 @@ const updateMapLayers = () => {
 
     const canShowRoute = state.mapUi.route && state.mapUi.robots && state.mapUi.points;
     let pathFeats = canShowRoute ? [
-        { type: 'Feature', properties: { type: 'backbone' }, geometry: { type: 'LineString', coordinates: [[121.4700, 31.2290], [121.4780, 31.2290]] } }
+        { type: 'Feature', properties: { type: 'backbone' }, geometry: { type: 'LineString', coordinates: [siteCoord(0.12, 0.52), siteCoord(0.9, 0.52)] } }
     ] : [];
 
     if (state.viewMode === 'global') {
@@ -1769,7 +1875,7 @@ const updateMapLayers = () => {
 
     if (state.viewMode === 'focus' && state.autoplayEnabled && !state.lastClick.type) {
         const t = DATA.tasks[state.currentTaskId];
-        if (t) map.easeTo({ center: t.robotCoords, zoom: 17, pitch: 50 });
+        if (t) map.easeTo({ center: t.robotCoords, zoom: 17, pitch: 0, bearing: 0 });
     }
 };
 
@@ -2381,6 +2487,9 @@ syncMapToolbarState();
 
 // ==== 4. Map Init ====
 map.on('load', () => {
+    map.setMaxBounds(SITE_VIEW_BOUNDS);
+    map.fitBounds(SITE_VIEW_BOUNDS, { padding: 48, duration: 0 });
+
     const buildFactoryGeojson = () => {
         const features = [];
         const createCylinder = (cx, cy, r, h, color) => {
@@ -2409,6 +2518,11 @@ map.on('load', () => {
     };
 
     map.addSource('factory-buildings', { type: 'geojson', data: buildFactoryGeojson() });
+    map.addSource('site-background', {
+        type: 'image',
+        url: './地图.png',
+        coordinates: SITE_IMAGE_COORDS
+    });
     map.addSource('business-layers', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     map.addSource('patrol-paths', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     
@@ -2442,8 +2556,9 @@ map.on('load', () => {
     map.addSource('alerts', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
 
     // Layers Extrusion n Paths
-    map.addLayer({ 'id': 'factory-ground', 'type': 'fill', 'source': 'factory-buildings', 'paint': { 'fill-color': '#000000', 'fill-opacity': 0.4 } });
-    map.addLayer({ 'id': 'factory-3d-buildings', 'source': 'factory-buildings', 'type': 'fill-extrusion', 'paint': { 'fill-extrusion-color': ['get', 'color'], 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-opacity': 0.95 } });
+    map.addLayer({ 'id': 'site-background-layer', 'type': 'raster', 'source': 'site-background', 'paint': { 'raster-opacity': 1 } });
+    map.addLayer({ 'id': 'factory-ground', 'type': 'fill', 'source': 'factory-buildings', 'paint': { 'fill-color': '#000000', 'fill-opacity': 0 } });
+    map.addLayer({ 'id': 'factory-3d-buildings', 'source': 'factory-buildings', 'type': 'fill-extrusion', 'paint': { 'fill-extrusion-color': ['get', 'color'], 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-opacity': 0 } });
     map.addLayer({ 'id': 'route-backbone', 'type': 'line', 'source': 'patrol-paths', 'filter': ['==', 'type', 'backbone'], 'paint': { 'line-color': '#3b4b5e', 'line-width': 1, 'line-opacity': 0.5 } });
     map.addLayer({ 'id': 'route-plan-all', 'type': 'line', 'source': 'patrol-paths', 'filter': ['==', 'type', 'plan-all'], 'paint': { 'line-color': '#8CA0B9', 'line-width': 1.6, 'line-dasharray': [1, 2.2], 'line-opacity': 0.45 } });
     map.addLayer({ 'id': 'route-active', 'type': 'line', 'source': 'patrol-paths', 'filter': ['==', 'type', 'active'], 'paint': { 'line-color': '#C5A87B', 'line-width': 3.2, 'line-opacity': 0.9 } });
