@@ -2044,7 +2044,7 @@ const renderLeadershipPanels = () => {
     const onTaskCount = robotBiz.executing;
     const totalMileage = 18650; // POC: 累计行驶里程（km）
     const todayMileage = 286;   // POC: 今日行驶里程（km）
-    const inspectionTotalMileage = 326; // POC: 巡检总里程（km）
+    const inspectionTotalMileage = 326; // POC: 今日已巡检里程（km）
     
     const env = computeEnvMetrics();
 
@@ -2054,10 +2054,10 @@ const renderLeadershipPanels = () => {
         const facilities = DATA.docks.length + points.length + 8;
         const anomalies = DATA.alerts.length;
         planSummary.innerHTML = `
-          <div class="summary-item"><span class="s-label">任务数</span><span class="s-val">${taskCount}</span><span class="s-meta">执行任务</span></div>
-          <div class="summary-item"><span class="s-label">巡检点数</span><span class="s-val">${points.length}</span><span class="s-meta">点位总量</span></div>
-          <div class="summary-item"><span class="s-label">设施设备数</span><span class="s-val">${facilities}</span><span class="s-meta">设备覆盖</span></div>
-          <div class="summary-item"><span class="s-label">异常数</span><span class="s-val">${anomalies}</span><span class="s-meta">待跟踪</span></div>
+          <div class="summary-item"><span class="s-label">任务数</span><span class="s-val">${taskCount}</span><span class="s-meta">巡检任务</span></div>
+          <div class="summary-item"><span class="s-label">巡检点数</span><span class="s-val">${points.length}</span><span class="s-meta">巡检点总量</span></div>
+          <div class="summary-item"><span class="s-label">设施设备数</span><span class="s-val">${facilities}</span><span class="s-meta">纳管设备</span></div>
+          <div class="summary-item"><span class="s-label">异常数</span><span class="s-val">${anomalies}</span><span class="s-meta">待跟踪项</span></div>
         `;
         const planTaskTotalEl = document.getElementById('plan-task-total');
         if (planTaskTotalEl) planTaskTotalEl.innerText = taskCount;
@@ -2070,11 +2070,11 @@ const renderLeadershipPanels = () => {
         const avgSpeed = Math.max(6, robotBiz.executing * 2 + robotBiz.returning);
         const currentMileage = Math.round(todayMileage * 0.62);
         robotSummary.innerHTML = `
-          <div class="summary-item"><span class="s-label">执行中 / 返航中</span><span class="s-val">${onTaskCount}/${returningCount}</span><span class="s-meta">业务状态</span></div>
-          <div class="summary-item"><span class="s-label">充电中</span><span class="s-val">${robotBiz.charging}</span><span class="s-meta">补能状态</span></div>
-          <div class="summary-item"><span class="s-label">平均续航</span><span class="s-val">${avgRange}km</span><span class="s-meta">电量换算</span></div>
-          <div class="summary-item"><span class="s-label">平均时速</span><span class="s-val">${avgSpeed}km/h</span><span class="s-meta">运行均值</span></div>
-          <div class="summary-item"><span class="s-label">当前里程 / 当日里程</span><span class="s-val">${currentMileage}/${todayMileage}km</span><span class="s-meta">总里程 ${totalMileage}km</span></div>
+          <div class="summary-item"><span class="s-label">执行中 / 返航中</span><span class="s-val">${onTaskCount}/${returningCount}</span><span class="s-meta">当前状态</span></div>
+          <div class="summary-item"><span class="s-label">充电中</span><span class="s-val">${robotBiz.charging}</span><span class="s-meta">充电状态</span></div>
+          <div class="summary-item"><span class="s-label">平均续航</span><span class="s-val">${avgRange}km</span><span class="s-meta">估算值</span></div>
+          <div class="summary-item"><span class="s-label">平均时速</span><span class="s-val">${avgSpeed}km/h</span><span class="s-meta">当日均值</span></div>
+          <div class="summary-item"><span class="s-label">当前里程 / 今日里程</span><span class="s-val">${currentMileage}/${todayMileage}km</span><span class="s-meta">总里程 ${totalMileage}km</span></div>
         `;
     }
     
@@ -2083,10 +2083,10 @@ const renderLeadershipPanels = () => {
         const missedPoints = Math.max(0, pointTotal - inspectedPoints);
         const abnormalPoints = warnPoints + dangerPoints;
         pointSummary.innerHTML = `
-          <div class="summary-item"><span class="s-label">已巡点数</span><span class="s-val">${inspectedPoints}</span><span class="s-meta">已完成</span></div>
-          <div class="summary-item"><span class="s-label">未巡点数</span><span class="s-val">${missedPoints}</span><span class="s-meta">待执行</span></div>
+          <div class="summary-item"><span class="s-label">今日已巡检点</span><span class="s-val">${inspectedPoints}</span><span class="s-meta">已完成</span></div>
+          <div class="summary-item"><span class="s-label">待巡检点</span><span class="s-val">${missedPoints}</span><span class="s-meta">待执行</span></div>
           <div class="summary-item clickable" data-alert-level="combined"><span class="s-label">异常点数</span><span class="s-val">${abnormalPoints}</span><span class="s-meta">点位告警</span></div>
-          <div class="summary-item"><span class="s-label">巡检覆盖摘要</span><span class="s-val">${pointCoverage}%</span><span class="s-meta">覆盖率</span></div>
+          <div class="summary-item"><span class="s-label">巡检覆盖率</span><span class="s-val">${pointCoverage}%</span><span class="s-meta">今日覆盖</span></div>
         `;
         const totalMileageEl = document.getElementById('point-total-mileage');
         if (totalMileageEl) totalMileageEl.innerText = `${inspectionTotalMileage} km`;
