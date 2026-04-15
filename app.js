@@ -2190,7 +2190,7 @@ const renderLeadershipPanels = () => {
     const onTaskCount = robotBiz.executing;
     const totalMileage = 18650; // POC: 累计行驶里程（km）
     const todayMileage = 286;   // POC: 今日行驶里程（km）
-    const inspectionTotalMileage = 326; // POC: 今日已巡检里程（km）
+    const inspectionTotalMileage = 326; // POC: 已巡检里程（km）
     const normalTaskCount = taskPool.length + 6;
     const tempTaskCount = 3;
     const inspectionPointTimes = inspectedPoints * 3 + 8;
@@ -2202,12 +2202,18 @@ const renderLeadershipPanels = () => {
         const taskCount = inspectionPointTimes;
         const facilities = DATA.docks.length + points.length + 8;
         const anomalies = DATA.alerts.length;
-        const closureRate = Math.max(88, 100 - anomalies * 3);
+        const detectionItemCount = points.reduce((total, point) => {
+            const monitorPoints = point.monitorPoints || [];
+            return total + monitorPoints.reduce((sum, monitorPoint) => {
+                const metrics = monitorPoint.metrics || {};
+                return sum + Object.keys(metrics).length;
+            }, 0);
+        }, 0);
         planSummary.innerHTML = `
           <div class="summary-item"><span class="s-label">巡检点次</span><span class="s-val">${taskCount}</span><span class="s-meta">今日累计</span></div>
-          <div class="summary-item"><span class="s-label">今日已巡检里程</span><span class="s-val">${inspectionTotalMileage}km</span><span class="s-meta">巡检里程</span></div>
+          <div class="summary-item"><span class="s-label">已巡检里程</span><span class="s-val">${inspectionTotalMileage}km</span><span class="s-meta">巡检里程</span></div>
           <div class="summary-item"><span class="s-label">覆盖率</span><span class="s-val">${pointCoverage}%</span><span class="s-meta">当日覆盖</span></div>
-          <div class="summary-item"><span class="s-label">统计指标</span><span class="s-val">${closureRate}%</span><span class="s-meta">异常闭环率</span></div>
+          <div class="summary-item"><span class="s-label">检测项</span><span class="s-val">${detectionItemCount}</span><span class="s-meta">检测项数量</span></div>
           <div class="summary-item"><span class="s-label">设施设备数</span><span class="s-val">${facilities}</span><span class="s-meta">纳管设备</span></div>
           <div class="summary-item"><span class="s-label">异常数</span><span class="s-val">${anomalies}</span><span class="s-meta">待跟踪项</span></div>
         `;
@@ -2424,15 +2430,29 @@ const formatShortDate = (date) => {
 };
 
 const initLeadershipDateFilter = () => {
-    const yEl = document.getElementById('leadership-year');
-    const mEl = document.getElementById('leadership-month');
-    const dEl = document.getElementById('leadership-day');
-    if (!yEl || !mEl || !dEl) return;
-    const now = new Date();
-    const y = now.getFullYear();
-    yEl.innerHTML = [y - 1, y, y + 1].map((v) => `<option value="${v}" ${v === y ? 'selected' : ''}>${v}年</option>`).join('');
-    mEl.innerHTML = Array.from({ length: 12 }, (_, i) => i + 1).map((v) => `<option value="${v}" ${v === (now.getMonth() + 1) ? 'selected' : ''}>${v}月</option>`).join('');
-    dEl.innerHTML = Array.from({ length: 31 }, (_, i) => i + 1).map((v) => `<option value="${v}" ${v === now.getDate() ? 'selected' : ''}>${v}日</option>`).join('');
+    const startEl = document.getElementById('leadership-start-date');
+    const endEl = document.getElementById('leadership-end-date');
+    if (!startEl || !endEl) return;
+
+    const today = formatShortDate(new Date());
+    startEl.value = today;
+    endEl.value = today;
+    startEl.max = today;
+    endEl.max = today;
+
+    startEl.addEventListener('change', () => {
+        if (startEl.value && endEl.value && startEl.value > endEl.value) {
+            endEl.value = startEl.value;
+        }
+        renderLeadershipPanels();
+    });
+
+    endEl.addEventListener('change', () => {
+        if (startEl.value && endEl.value && endEl.value < startEl.value) {
+            startEl.value = endEl.value;
+        }
+        renderLeadershipPanels();
+    });
 };
 
 const generateEnvMetricHistory = (metricKey, days) => {

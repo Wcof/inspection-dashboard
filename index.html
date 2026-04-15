@@ -72,9 +72,9 @@
           <div class="card-header">
             <h3 class="panel-title">总体运营概览</h3>
             <div class="date-filter-inline">
-              <select id="leadership-year"></select>
-              <select id="leadership-month"></select>
-              <select id="leadership-day"></select>
+              <input id="leadership-start-date" type="date" aria-label="开始日期">
+              <span class="date-range-sep">至</span>
+              <input id="leadership-end-date" type="date" aria-label="结束日期">
             </div>
           </div>
           <div class="kpi-grid">
@@ -116,6 +116,16 @@
             <div class="rs-total">机器人总里程: <strong id="robot-total-mileage">0</strong></div>
           </div>
           <div class="summary-grid four-columns" id="robot-summary-cards"></div>
+        </section>
+
+        <!-- E. 充电站 -->
+        <section class="card dock-status" style="flex: 1;">
+          <div class="card-header">
+            <h3 class="panel-title">充电站概览</h3>
+          </div>
+          <div class="dock-grid" id="dock-grid-container">
+            <!-- Dynamic dock stats -->
+          </div>
         </section>
 
       </aside>
@@ -161,6 +171,17 @@
           </div>
         </section>
 
+        <section class="card broadcast-card">
+          <div class="card-header">
+            <h3 class="panel-title">信息播报</h3>
+            <div class="rs-total">告警置顶</div>
+          </div>
+          <div class="broadcast-pin" id="broadcast-pin">暂无置顶告警</div>
+          <div class="broadcast-viewport">
+            <div class="broadcast-list" id="broadcast-list"></div>
+          </div>
+        </section>
+
         <section class="card env-summary">
           <div class="card-header">
             <h3 class="panel-title">设施设备概览</h3>
@@ -173,27 +194,6 @@
               <div class="rs-total">轮播点位: <strong id="env-focus-point">--</strong></div>
             </div>
             <div class="summary-grid two-columns env-realtime-grid" id="env-summary-cards"></div>
-          </div>
-        </section>
-
-        <!-- E. 充电站 -->
-        <section class="card dock-status" style="flex: 1;">
-          <div class="card-header">
-            <h3 class="panel-title">充电站概览</h3>
-          </div>
-          <div class="dock-grid" id="dock-grid-container">
-            <!-- Dynamic dock stats -->
-          </div>
-        </section>
-
-        <section class="card broadcast-card">
-          <div class="card-header">
-            <h3 class="panel-title">信息播报</h3>
-            <div class="rs-total">告警置顶</div>
-          </div>
-          <div class="broadcast-pin" id="broadcast-pin">暂无置顶告警</div>
-          <div class="broadcast-viewport">
-            <div class="broadcast-list" id="broadcast-list"></div>
           </div>
         </section>
 
