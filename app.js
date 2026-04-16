@@ -2366,16 +2366,16 @@ const renderLeadershipPanels = () => {
     const facilitySummary = document.getElementById('facility-summary-cards');
     if (facilitySummary) {
         const typed = [
-            { name: '换热设备', count: 12, risk: 2 },
-            { name: '阀门管线', count: 28, risk: 3 },
-            { name: '配电柜', count: 16, risk: 1 },
-            { name: '门禁点位', count: 9, risk: 0 }
+            { name: '温度计', count: 12, risk: 0 },
+            { name: '直流阀', count: 28, risk: 0 },
+            { name: '交流柜', count: 16, risk: 0 },
+            { name: 'AP设备', count: 9, risk: 0 }
         ];
         const total = typed.reduce((s, t) => s + t.count, 0);
         const totalEl = document.getElementById('facility-total');
         if (totalEl) totalEl.innerText = total;
         facilitySummary.innerHTML = typed.map((it) => `
-          <div class="summary-item"><span class="s-label">${it.name}</span><span class="s-val">${it.count}</span><span class="s-meta">发现风险 ${it.risk} 项</span></div>
+         <div class="summary-item"><span class="s-label">${it.name}</span><span class="s-val">${it.count}</span><span class="s-meta">异常 ${it.risk} </span></div>
         `).join('');
     }
 
