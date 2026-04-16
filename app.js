@@ -258,6 +258,10 @@ const showRobotPopup = (robotId) => {
                         <span class="popup-stat-label">当前任务</span>
                         <span class="popup-stat-value">${t.taskName || r.task || '无任务'}</span>
                     </div>
+                    <div class="popup-stat">
+                        <span class="popup-stat-label">机器人类型</span>
+                        <span class="popup-stat-value">${r.robotType || '四轮'}</span>
+                    </div>
                     <div class="popup-stat" style="grid-column:span 2">
                         <span class="popup-stat-label">剩余电量 / 剩余里程</span>
                         <div class="popup-battery">
@@ -848,11 +852,11 @@ const DATA = {
         }
     },
     robots: [
-        { id: 'R-07', status: 'safe', label: '执行中', task: 'E区|动力站房特巡', battery: 82, coords: [121.4755, 31.2315], taskId: 'T-01' },
-        { id: 'R-12', status: 'safe', label: '执行中', task: 'B区|例行安防', battery: 65, coords: [121.4710, 31.2290], taskId: 'T-02' },
-        { id: 'R-02', status: 'warn', label: '返航中', task: '返回C区基站', battery: 15, coords: [121.4770, 31.2295], taskId: null },
-        { id: 'R-11', status: 'charging', label: '充电中', task: 'A区充换站|待命', battery: 100, coords: [121.4725, 31.2280], taskId: null },
-        { id: 'R-05', status: 'danger', label: '故障', task: '底盘驱动脱机', battery: 45, coords: [121.4765, 31.2320], taskId: null }
+        { id: 'R-07', status: 'safe', label: '执行中', task: 'E区|动力站房特巡', battery: 82, coords: [121.4755, 31.2315], taskId: 'T-01', robotType: '四轮' },
+        { id: 'R-12', status: 'safe', label: '执行中', task: 'B区|例行安防', battery: 65, coords: [121.4710, 31.2290], taskId: 'T-02', robotType: '履带' },
+        { id: 'R-02', status: 'warn', label: '返航中', task: '返回C区基站', battery: 15, coords: [121.4770, 31.2295], taskId: null, robotType: '滑轨' },
+        { id: 'R-11', status: 'charging', label: '充电中', task: 'A区充换站|待命', battery: 100, coords: [121.4725, 31.2280], taskId: null, robotType: '四轮' },
+        { id: 'R-05', status: 'danger', label: '故障', task: '底盘驱动脱机', battery: 45, coords: [121.4765, 31.2320], taskId: null, robotType: '履带' }
     ],
     tasks: {
         'T-01': {
