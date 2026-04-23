@@ -1,19 +1,24 @@
 {
-  "name": "dashboard",
+  "name": "bot-dashboard",
+  "private": true,
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "build:pages": "rm -rf dist && mkdir -p dist && cp index.html app.js main.css 地图.png dist/",
-    "build": "npm run build:pages",
-    "builder": "npm run build",
-    "package": "npm run build && zip -r dashboard_deploy.zip dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "mapbox-gl": "^3.20.0"
+    "maplibre-gl": "^4.7.1",
+    "pinia": "^2.3.1",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.4",
+    "sass": "^1.89.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vue-tsc": "^2.2.10"
   }
 }

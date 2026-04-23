@@ -1,0 +1,30 @@
+:root {
+  --bg-app: #030711;
+  --bg-deep: #07111f;
+  --bg-panel: rgba(8, 16, 30, 0.9);
+  --bg-panel-strong: rgba(11, 21, 38, 0.96);
+  --bg-card: linear-gradient(180deg, rgba(22, 36, 57, 0.9), rgba(10, 18, 33, 0.92));
+  --bg-soft: rgba(19, 31, 51, 0.85);
+  --border-subtle: rgba(131, 154, 196, 0.18);
+  --border-focus: rgba(197, 168, 123, 0.55);
+  --text-main: #e6eefb;
+  --text-sub: #afc3e5;
+  --text-dim: #7f94b7;
+  --accent-titan: #c5a87b;
+  --accent-blue: #6f9dcc;
+  --accent-green: #2ed49b;
+  --accent-red: #ff6b78;
+  --accent-yellow: #f7bd54;
+  --status-safe: #2ed49b;
+  --status-warn: #f7bd54;
+  --status-danger: #ff6b78;
+  --status-charging: #59a8ff;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --shadow-float: 0 16px 40px rgba(0, 0, 0, 0.42);
+  --font-sans: "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-data: "JetBrains Mono", "SFMono-Regular", monospace;
+  --header-height: 92px;
+}

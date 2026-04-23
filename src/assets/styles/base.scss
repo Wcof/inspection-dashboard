@@ -1,0 +1,52 @@
+@use './tokens.scss';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at top left, rgba(64, 98, 142, 0.28), transparent 26%),
+    radial-gradient(circle at top right, rgba(197, 168, 123, 0.14), transparent 20%),
+    linear-gradient(180deg, #06101d 0%, #02050d 100%);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.status-safe {
+  color: var(--status-safe);
+}
+
+.status-warn {
+  color: var(--status-warn);
+}
+
+.status-danger {
+  color: var(--status-danger);
+}
+
+.status-charging {
+  color: var(--status-charging);
+}
